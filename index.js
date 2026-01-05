@@ -3,7 +3,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3002;
 
 app.use(cors());
 app.use(morgan('dev'));
@@ -11,66 +11,66 @@ app.use(express.json());
 
 // Sample data
 
-let users = [
-  { id: 1, name: 'John Doe', email: 'john@example.com' },
-  { id: 2, name: 'Jane Smith', email: 'jane@example.com' },
+let products = [
+  { id: 1, name: 'Laptop', price: '10,000 baht' },
+  { id: 2, name: 'Phone', price: '5,000 baht' },
 ];
 
 // Routes
 
 //check status
-app.get('/health', (req, res) => res.json({ status: 'OK' }));
+app.get('/user-product', (req, res) => res.json({ status: 'OK' }));
 
-// Get all users
-app.get('/users', (req, res) => res.json(users));
+// Get all products
+app.get('/products', (req, res) => res.json(products));
 
-// Get user by ID
-app.get('/users/:id', (req, res) => {
-    const user = users.find(u => u.id === parseInt(req.params.id));
-    if (!user) {
-        res.status(404).json({ message: 'User not found' });
+// Get product by ID
+app.get('/products/:id', (req, res) => {
+    const product = products.find(p => p.id === parseInt(req.params.id));
+    if (!product) {
+        res.status(404).json({ message: 'Product not found' });
     } else {
-        res.json(user);
+        res.json(product);
     }
 });
 
-// Create a new user (POST)
-app.post('/users', (req, res) => {
-    const { name, email } = req.body;
-    if (!name || !email) {
-        return res.status(400).json({ message: 'Name and email are required' });
+// Create a new product (POST)
+app.post('/products', (req, res) => {
+    const { name, price } = req.body || {};
+    if (!name || !price) {
+        return res.status(400).json({ message: 'Name and price are required' });
     }
-    const newUser = {
-        id: users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1,
+    const newProduct = {
+        id: products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1,
         name,
-        email
+        price
     };
-    users.push(newUser);
-    res.status(201).json(newUser);
+    products.push(newProduct);
+    res.status(201).json(newProduct);
 });
 
-// Update a user (PUT)
-app.put('/users/:id', (req, res) => {
-    const user = users.find(u => u.id === parseInt(req.params.id));
-    if (!user) {
-        return res.status(404).json({ message: 'User not found' });
+// Update a product (PUT)
+app.put('/products/:id', (req, res) => {
+    const product = products.find(p => p.id === parseInt(req.params.id));
+    if (!product) {
+        return res.status(404).json({ message: 'Product not found' });
     }
-    const { name, email } = req.body || {};
-    if (name) user.name = name;
-    if (email) user.email = email;
-    res.json(user);
+    const { name, price } = req.body || {};
+    if (name) product.name = name;
+    if (price) product.price = price;
+    res.json(product);
 });
 
-// Delete a user (DELETE)
-app.delete('/users/:id', (req, res) => {
-    const index = users.findIndex(u => u.id === parseInt(req.params.id));
+// Delete a product (DELETE)
+app.delete('/products/:id', (req, res) => {
+    const index = products.findIndex(p => p.id === parseInt(req.params.id));
     if (index === -1) {
-        return res.status(404).json({ message: 'User not found' });
+        return res.status(404).json({ message: 'Product not found' });
     }
-    const deletedUser = users.splice(index, 1);
-    res.json({ message: 'User deleted', user: deletedUser[0] });
+    const deletedProduct = products.splice(index, 1);
+    res.json({ message: 'Product deleted', product: deletedProduct[0] });
 });
 
 app.listen(PORT, () => {
-    console.log(`User service running on port ${PORT}`);
+    console.log(`Product service running on port ${PORT}`);
 });
